@@ -92,11 +92,14 @@ while true; # get VM info
 do
     begin=$(grep_after $end "Start of system state" $@ "n")
     #begin=$(cat $VIMDUMP | grep_after2 $end "config = (vim.vm.Summary.ConfigSummary)" "n")
-    #echo "begin $begin"
+    echo "begin $begin"
     if [ -z "$begin" ] # if the string was not found
     then
         break
     fi
+
+    end=$(grep_after $begin "End of system state" $@ "n")
+    echo "end $end"
 
     #egrep -v '0.0  0.0' procstate | sed -e 's/  */ /g' | cut -d ' ' -f 6,11-13 | sort -k 1,1 -t " " -rn | head
 
@@ -111,9 +114,6 @@ do
     grep_after $end "Start of system state" $@ "" >> $OUTPUT_RSS
     cat $@ | extract_lines $begin $end | egrep -v '0.0  0.0' | sed -e 's/  */ /g' | cut -d ' ' -f 6,11-13 | sort -k 1,1 -t " " -rn | head >> $OUTPUT_RSS
     printf "\n" >> $OUTPUT_RSS
-
-    end=$(grep_after $begin "End of system state" $@ "n")
-    #echo "end $end"
 
 done
 
